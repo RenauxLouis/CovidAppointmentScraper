@@ -133,3 +133,5 @@ if __name__ == "__main__":
         create_secure_connection_and_send_mail("cvs")
     if bmc_has_availability:
         create_secure_connection_and_send_mail("bmc")
+        
+    DRIVER.close()
