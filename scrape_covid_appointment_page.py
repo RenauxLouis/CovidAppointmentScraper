@@ -110,7 +110,7 @@ def send_mail(server, available_website):
 
     title = f"{available_website} HAS AVAILABILITY "
 
-    receiver_email = "rehajhunjhunwala@gmail.com"
+    receiver_email = "renauxlouis@gmail.com"
     assert receiver_email.split("@")[1] == "gmail.com"
 
     msg_root = MIMEMultipart("alternative")
