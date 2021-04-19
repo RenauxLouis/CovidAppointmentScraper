@@ -17,7 +17,7 @@ from selenium.webdriver.firefox.options import Options
 
 CVS_URL = "https://www.cvs.com/immunizations/covid-19-vaccine"
 BMC_URL = "https://mychartscheduling.bmc.org/MyChartscheduling/covid19/#/triage"
-BMC_SHORTCUT_URL = "https://mychartscheduling.bmc.org/mychartscheduling/SignupAndSchedule/EmbeddedSchedule?id=10033909,10033319,10033364,10033367,10033370,10033706,10033373&dept=10098252,10098245,10098242,10098243,10098244,10108801,10098241&vt=2008&lang=en-US"
+BMC_SHORTCUT_URL = "https://mychartscheduling.bmc.org/mychartscheduling/SignupAndSchedule/EmbeddedSchedule?id=10033909,10033319,10033364,10033367,10033370,10033706,10033083,10033373&dept=10098252,10098245,10098242,10098243,10098244,10105138,10108801,10098241&vt=2008&lang=en-US"
 WALGREENS_URL = "https://www.walgreens.com/findcare/vaccination/covid-19?ban=covid_scheduler_brandstory_main_March2021"
 
 opts = Options()
@@ -40,27 +40,6 @@ def get_cvs_availability():
     return len(not_available_messages) != 1
 
 
-def bmc_has_availability():
-    DRIVER.get(BMC_URL)
-    DRIVER.find_elements_by_xpath("//*[contains(text(), 'Yes')]")[0].click()
-    DRIVER.find_elements_by_xpath("//*[contains(text(), 'Next Question')]")[0].click()
-    DRIVER.find_elements_by_xpath("//*[contains(text(), 'No')]")[-1].click()
-    DRIVER.find_elements_by_xpath("//*[contains(text(), 'Next Question')]")[0].click()
-    DRIVER.find_elements_by_xpath("//*[contains(text(), 'Boston Community Vaccination Sites')]")[0].click()
-
-    timeout = 3
-    try:
-        element_present = EC.presence_of_element_located((By.ID, "D6F73C26-7627-4948-95EA-2C630C25C5E9_scheduleOpenings_OpeningsData"))
-        WebDriverWait(DRIVER, timeout).until(element_present)
-    except TimeoutException:
-        print("Timed out waiting for page to load")
-    finally:
-        print("Page loaded")
-        not_available_messages = DRIVER.find_elements_by_xpath("//*[contains(text(), 'In the meantime, you can find answers to many questions about COVID-19 vaccines – such as how the vaccine works and information for people with specific health conditions – on BMC.org, which is being updated as we learn more.')]")
-
-    return len(not_available_messages) != 1
-
-
 def get_bmc_availability():
     DRIVER.get(BMC_SHORTCUT_URL)
     timeout = 3
@@ -73,28 +52,6 @@ def get_bmc_availability():
         not_available_messages = DRIVER.find_elements_by_xpath("//*[contains(text(), 'In the meantime, you can find answers to many questions about COVID-19 vaccines – such as how the vaccine works and information for people with specific health conditions – on BMC.org, which is being updated as we learn more.')]")
 
     return len(not_available_messages) != 1
-
-
-def walgreens_has_availability():
-
-    DRIVER.get(WALGREENS_URL)
-    DRIVER.delete_all_cookies()
-    DRIVER.find_elements_by_xpath("//*[contains(text(), 'Schedule new appointment')]")[0].click()
-    DRIVER.delete_all_cookies()
-
-    timeout = 3
-    try:
-        element_present = EC.presence_of_element_located((By.ID, "inputLocation"))
-        WebDriverWait(DRIVER, timeout).until(element_present)
-    except TimeoutException:
-        print("Timed out waiting for page to load")
-    finally:
-        print("Page loaded")
-
-    # DRIVER.find_element_by_id("inputLocation").send_keys("02139")
-    # DRIVER.find_elements_by_xpath("//*[contains(text(), 'Search')]")[0].click()
-
-    # return len(not_available_messages) != 1
 
 
 def create_secure_connection_and_send_mail(available_website):
@@ -110,7 +67,7 @@ def send_mail(server, available_website):
 
     title = f"{available_website} HAS AVAILABILITY "
 
-    receiver_email = "rehajhunjhunwala@gmail.com"
+    receiver_email = "renauxlouis@gmail.com"
     assert receiver_email.split("@")[1] == "gmail.com"
 
     msg_root = MIMEMultipart("alternative")
@@ -133,5 +90,5 @@ if __name__ == "__main__":
         create_secure_connection_and_send_mail("cvs")
     if bmc_has_availability:
         create_secure_connection_and_send_mail("bmc")
-        
+
     DRIVER.close()
